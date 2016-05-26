@@ -127,6 +127,7 @@ sampsize_nrow_nodesize5_ntree4000 <- rep_models(occ_train, occ_test, bg_train, b
 sampsize_nrow_nodesize5_ntree5000 <- rep_models(occ_train, occ_test, bg_train, bg_test,
                                                 ntree=5000, nodesize = 5, sampsize = c(NROW(occ_train), NROW(occ_train)))
 
+## best ???
 sampsize_nrow_nodesize5_ntree10000 <- rep_models(occ_train, occ_test, bg_train, bg_test,
                                                 ntree=10000, nodesize = 5, sampsize = c(NROW(occ_train), NROW(occ_train)))
 
@@ -172,6 +173,10 @@ rep_models(occ_train, occ_test, bg_train, bg_test,
            maxnodes = 5200, ntree = 10, nrep=1)
 
 
+## best ???
+sampsize_nrow_nodesize5_ntree10000 <- rep_models(occ_train, occ_test, bg_train, bg_test,
+                                                 ntree=10000, nodesize = 5, sampsize = c(NROW(occ_train), NROW(occ_train)))
+
 
 
 experiment <- SigOptR::create_experiment(list(
@@ -188,13 +193,13 @@ experiment <- SigOptR::create_experiment(list(
 experiment_id = experiment$id # 3977
 results <- list()
 
-for(i in 1:10) {
+for(i in 1:50) {
   suggestion <- SigOptR::create_suggestion(experiment_id)
   p <- suggestion$assignments
   tryCatch({
     res <- rep_models(occ_train, occ_test, bg_train, bg_test,
                       nodesize = p$nodesize, ntree = p$ntree*1000,
-                      replace = as.logical(p$replace), sampsize = p$sampsize,
+                      replace = as.logical(p$replace), sampsize = c(p$sampsize,p$sampsize),
                       maxnodes = trunc((trunc(p$sampsize/p$nodesize)+1) * (p$maxnodes_prec/100)))
 
     results[[suggestion$id]] <- list(p, res)
