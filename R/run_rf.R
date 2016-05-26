@@ -193,17 +193,19 @@ experiment <- SigOptR::create_experiment(list(
 experiment_id = experiment$id # 3977
 results <- list()
 
+rSigOpt::set_client_token("DPZMBPFGAANKSOYXVTOTWVMRJAAKKIXBZDFVGCOBNNIIDORR")
+
+## rSigOpt::suggestion_delete_list() # HAS BUG
+# rSigOpt:::request("DELETE", paste0("experiments/", experiment_id, "/suggestions"), body = rSigOpt:::named_list("open"), encode = "form")
+
 for(i in 1:50) {
   suggestion <- SigOptR::create_suggestion(experiment_id)
-  p <- suggestion$assignments
   tryCatch({
+    p <- suggestion$assignments
     res <- rep_models(occ_train, occ_test, bg_train, bg_test,
                       nodesize = p$nodesize, ntree = p$ntree*1000,
                       replace = as.logical(p$replace), sampsize = c(p$sampsize,p$sampsize),
                       maxnodes = trunc((trunc(p$sampsize/p$nodesize)+1) * (p$maxnodes_prec/100)))
-
-    results[[suggestion$id]] <- list(p, res)
-
     #
     SigOptR::create_observation(experiment_id,
                                 list(suggestion=suggestion$id,
